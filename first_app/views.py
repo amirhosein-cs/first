@@ -1,8 +1,10 @@
-from http.client import responses
-from first_app.models import Contact
-from django.shortcuts import render
-from django.http import HttpResponse,JsonResponse
+from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+
 from first_app.forms import ContactForm
+
+
 # Create your views here.
 
 
@@ -19,9 +21,22 @@ def contact_view(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
+
+            messages.success(
+                request,
+                "Thank you! Your message has been sent."
+            )
+
+            return redirect("first_app:contact")
+
+        messages.error(
+            request,
+            "Oops! Please check the form and try again."
+        )
+
     else:
-         form = ContactForm()
-    return render(request, "website/contact.html", {"form":form})
+        form = ContactForm()
+    return render(request, "website/contact.html", {"form": form})
 
 
 def test(request):
@@ -29,8 +44,7 @@ def test(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
-            print(form.cleaned_data)
             return HttpResponse("thanks")
     else:
         form = ContactForm()
-    return render(request, "website/test.html", {"form":form})
+    return render(request, "website/test.html", {"form": form})
