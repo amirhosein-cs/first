@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -23,3 +24,7 @@ class Post(models.Model):
         return "{} - {}".format(self.title, self.id)
     def snippets(self):
         return self.content[:100] + "..."
+    '''
+    def get_absolute_url(self):
+        return reverse('blog:single', kwargs={'pid': self.id})
+    '''
