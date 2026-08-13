@@ -1,5 +1,7 @@
-from django.shortcuts import render,get_object_or_404
-from blog.models import Post
+from django.shortcuts import render,get_object_or_404,redirect
+from blog.forms import CommentForm
+from django.contrib import messages
+from blog.models import Post,Comment
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 # Create your views here.
 def blog_view(request,**kwargs):
@@ -20,8 +22,19 @@ def blog_view(request,**kwargs):
     return render(request,'blog/blog-home.html',context)
 
 def blog_single(request,pid):
+    form = CommentForm()
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,  "Thank you! Your message has been sent.")
+            return redirect("blog:single",pid)
+        else:
+            messages.error(request,"Oops! Please check the form and try again.")
+            return redirect("blog:single",pid)
     Posts = Post.objects.filter(status=1)
     post = get_object_or_404(Posts,pk=pid)
+    comments = Comment.objects.filter(post=post.id,approved=True)
     AllPosts = list(Posts)
     Total = len(Posts)
     try:
@@ -30,8 +43,26 @@ def blog_single(request,pid):
         index = -1
     Prev_post = AllPosts[index-1] if index > 0 else None #اینجا رو جوری بنویس که اگه پستی موجود نبود بنویسه یا بیاره از اول template  ها رو هم درست کن
     Next_post = AllPosts[index+1] if index < (Total-1) else None #اینجا رو جوری بنویس که اگه پستی موجود نبود بنویسه یا بیاره از اول template  ها رو هم درست کن
-    context = {'post':post,'Prev_post':Prev_post,'Next_post':Next_post,'AllPosts':AllPosts,'Total':Total}
+    context = {
+        'post':post,
+        'Prev_post':Prev_post,
+        'Next_post':Next_post,
+        'AllPosts':AllPosts,
+        'Total':Total,
+        'Comments':comments,
+        'form':form,
+    }
     return render(request,'blog/blog-single.html',context)
+
+# def blog_comments(request,pid):
+#     Posts = Post.objects.filter(status=1)
+#     post = get_object_or_404(Posts,pk=pid)
+#     comments = Comment.objects.filter(post=post.id)
+#     print("POST ID:", post.id)
+#     print("ALL COMMENTS:", comments)
+#     print("COMMENT COUNT:", comments.count())
+#     context = {'post':post,'Comments':comments}
+#     return render(request,'blog/blog-single.html',context)
 
 def test(request):
     return render(request,'test.html')
