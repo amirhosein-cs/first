@@ -54,16 +54,6 @@ def blog_single(request,pid):
     }
     return render(request,'blog/blog-single.html',context)
 
-# def blog_comments(request,pid):
-#     Posts = Post.objects.filter(status=1)
-#     post = get_object_or_404(Posts,pk=pid)
-#     comments = Comment.objects.filter(post=post.id)
-#     print("POST ID:", post.id)
-#     print("ALL COMMENTS:", comments)
-#     print("COMMENT COUNT:", comments.count())
-#     context = {'post':post,'Comments':comments}
-#     return render(request,'blog/blog-single.html',context)
-
 def test(request):
     return render(request,'test.html')
 
