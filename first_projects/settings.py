@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'first_app.apps.FirstAppConfig',
     'django_extensions',
     'blog.apps.BlogConfig',
+    'accounts',
 ]
 
 # sites framework
